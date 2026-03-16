@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.0.4]
+
+### Added
+
+- Horizontal toggle in the visual editor.
+- `getLayoutOptions()` support so `grid_options` works correctly in the sections dashboard.
+
 ## [1.0.3]
 
 - Fix visual editor breaking card layout when child cards fire their own config-changed events.

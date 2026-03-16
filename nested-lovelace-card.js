@@ -4,6 +4,98 @@ console.log(
   ''
 );
 
+class NestedLovelaceCardEditor extends HTMLElement {
+  constructor() {
+    super();
+    this._config = {};
+    this._initialized = false;
+  }
+
+  async setConfig(config) {
+    this._config = config;
+    if (!this._initialized) {
+      await this._build();
+    } else {
+      this._sync();
+    }
+  }
+
+  async _build() {
+    this._initialized = true;
+
+    // Load the hui-vertical-stack-card editor for title + cards UI.
+    let cls = customElements.get('hui-vertical-stack-card');
+    if (!cls) {
+      const helpers = await window.loadCardHelpers();
+      helpers.createCardElement({ type: 'vertical-stack', cards: [] });
+      await customElements.whenDefined('hui-vertical-stack-card');
+      cls = customElements.get('hui-vertical-stack-card');
+    }
+    this._huiEditor = await cls.getConfigElement();
+    this._huiEditor.addEventListener('config-changed', (ev) => {
+      // Stop all events from the hui editor bubbling further — we re-dispatch
+      // the ones we care about ourselves with the full merged config.
+      ev.stopPropagation();
+      if (ev.detail.config.type !== 'custom:vertical-stack-in-card') return;
+      this._fireConfigChanged({ ...this._config, ...ev.detail.config });
+    });
+    // Horizontal toggle row.
+    const row = document.createElement('div');
+    row.style.cssText =
+      'display:flex;align-items:center;justify-content:space-between;padding:8px 16px;';
+    const label = document.createElement('span');
+    label.textContent = 'Stack horizontally';
+    this._switch = document.createElement('ha-switch');
+    this._switch.addEventListener('change', () => {
+      const config = { ...this._config };
+      if (this._switch.checked) config.horizontal = true;
+      else delete config.horizontal;
+      this._fireConfigChanged(config);
+    });
+    row.appendChild(label);
+    row.appendChild(this._switch);
+    this.appendChild(row);
+
+    this.appendChild(this._huiEditor);
+
+    this._sync();
+  }
+
+  set hass(hass) {
+    this._hass = hass;
+    if (this._huiEditor) {
+      this._huiEditor.hass = hass;
+    }
+  }
+
+  _sync() {
+    if (this._huiEditor) {
+      if (this._hass) this._huiEditor.hass = this._hass;
+      this._huiEditor.setConfig({
+        type: this._config.type,
+        title: this._config.title,
+        cards: this._config.cards || [],
+      });
+    }
+    if (this._switch) {
+      this._switch.checked = !!this._config.horizontal;
+    }
+  }
+
+  _fireConfigChanged(config) {
+    this._config = config;
+    this.dispatchEvent(
+      new CustomEvent('config-changed', {
+        detail: { config },
+        bubbles: true,
+        composed: true,
+      })
+    );
+  }
+}
+
+customElements.define('nested-lovelace-card-editor', NestedLovelaceCardEditor);
+
 class VerticalStackInCard extends HTMLElement {
   constructor() {
     super();
@@ -162,54 +254,15 @@ class VerticalStackInCard extends HTMLElement {
     return sizes.reduce((a, b) => a + b, 0);
   }
 
-  static async getConfigElement() {
-    // Ensure the hui-stack-card-editor is loaded.
-    let cls = customElements.get('hui-vertical-stack-card');
-    if (!cls) {
-      const helpers = await window.loadCardHelpers();
-      helpers.createCardElement({ type: 'vertical-stack', cards: [] });
-      await customElements.whenDefined('hui-vertical-stack-card');
-      cls = customElements.get('hui-vertical-stack-card');
-    }
-    const configElement = await cls.getConfigElement();
-
-    // Patch setConfig to only pass properties the hui-vertical-stack-card
-    // editor understands, while retaining the full config for merging back.
-    const originalSetConfig = configElement.setConfig;
-    let _fullConfig = {};
-    configElement.setConfig = (config) => {
-      _fullConfig = config;
-      originalSetConfig.call(configElement, {
-        type: config.type,
-        title: config.title,
-        cards: config.cards || [],
-      });
+  getLayoutOptions() {
+    return {
+      grid_columns: 4,
+      grid_rows: 'auto',
     };
+  }
 
-    // When the editor saves, merge back properties it doesn't know about
-    // (e.g. horizontal, styles, grid_options, visibility) so they are not lost.
-    configElement.addEventListener(
-      'config-changed',
-      (ev) => {
-        if (ev._vsicMerged) return;
-        // Only intercept the top-level config-changed fired by the
-        // hui-vertical-stack-card editor itself. Child card editors inside it
-        // also fire config-changed events that bubble up — those must pass
-        // through untouched so the hui editor can process them first.
-        if (ev.detail.config.type !== 'custom:vertical-stack-in-card') return;
-        ev.stopPropagation();
-        const merged = new CustomEvent('config-changed', {
-          detail: { config: { ..._fullConfig, ...ev.detail.config } },
-          bubbles: true,
-          composed: true,
-        });
-        merged._vsicMerged = true;
-        configElement.dispatchEvent(merged);
-      },
-      { capture: true }
-    );
-
-    return configElement;
+  static getConfigElement() {
+    return document.createElement('nested-lovelace-card-editor');
   }
 
   static getStubConfig() {
