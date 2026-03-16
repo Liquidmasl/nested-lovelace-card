@@ -9,6 +9,9 @@
     "type": "git",
     "url": "https://github.com/Liquidmasl/nested-lovelace-card.git"
   },
+  "scripts": {
+    "version": "node -e \"const fs=require('fs'),v=require('./package.json').version,f='nested-lovelace-card.js';fs.writeFileSync(f,fs.readFileSync(f,'utf8').replace(/Version: \\{'[^']*'\\}/,\\`Version: {'${v}'}\\`));\" && git add nested-lovelace-card.js"
+  },
   "keywords": [
     "home-assistant",
     "lovelace",
