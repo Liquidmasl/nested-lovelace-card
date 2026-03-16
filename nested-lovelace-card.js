@@ -1,5 +1,5 @@
 console.log(
-  `%cnested-lovelace-card\n%cVersion: ${'1.0.0'}`,
+  `%cnested-lovelace-card\n%cVersion: ${'1.0.1'}`,
   'color: #1976d2; font-weight: bold;',
   ''
 );
@@ -173,14 +173,36 @@ class VerticalStackInCard extends HTMLElement {
     }
     const configElement = await cls.getConfigElement();
 
-    // Patch setConfig to remove non-VSIC config options.
+    // Patch setConfig to only pass properties the hui-vertical-stack-card
+    // editor understands, while retaining the full config for merging back.
     const originalSetConfig = configElement.setConfig;
-    configElement.setConfig = (config) =>
+    let _fullConfig = {};
+    configElement.setConfig = (config) => {
+      _fullConfig = config;
       originalSetConfig.call(configElement, {
         type: config.type,
         title: config.title,
         cards: config.cards || [],
       });
+    };
+
+    // When the editor saves, merge back properties it doesn't know about
+    // (e.g. horizontal, styles, grid_options, visibility) so they are not lost.
+    configElement.addEventListener(
+      'config-changed',
+      (ev) => {
+        if (ev._vsicMerged) return;
+        ev.stopPropagation();
+        const merged = new CustomEvent('config-changed', {
+          detail: { config: { ..._fullConfig, ...ev.detail.config } },
+          bubbles: true,
+          composed: true,
+        });
+        merged._vsicMerged = true;
+        configElement.dispatchEvent(merged);
+      },
+      { capture: true }
+    );
 
     return configElement;
   }
