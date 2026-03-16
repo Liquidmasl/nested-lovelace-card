@@ -1,36 +1,51 @@
 name: Release
 
 on:
-  workflow_dispatch:
   push:
     branches:
-      - 'master'
+      - main
     paths:
-      - 'VERSION'
+      - package.json
 
 jobs:
-  tag-and-release:
+  release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Set up Git
+      - name: Get version from package.json
+        id: version
+        run: echo "version=v$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+
+      - name: Check if tag already exists
+        id: tag_check
         run: |
-          git config user.name "${{ github.actor }}"
-          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          if git rev-parse "${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
 
-      - name: Create Git Tag
-        id: create_tag
+      - name: Extract changelog section
+        if: steps.tag_check.outputs.exists == 'false'
+        id: changelog
         run: |
-          VERSION=$(cat VERSION)
-          git tag -a "v$VERSION" -m "Release $VERSION"
-          git push origin "v$VERSION"
+          VERSION="${{ steps.version.outputs.version }}"
+          VER="${VERSION#v}"
+          awk "/^## \[${VER}\]/{found=1; next} found && /^## \[/{exit} found{print}" CHANGELOG.md > /tmp/release_notes.md
+          if [ ! -s /tmp/release_notes.md ]; then
+            echo "No changelog entry found for ${VERSION}" > /tmp/release_notes.md
+          fi
 
-
-      - name: Create GitHub Release
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          VERSION=$(cat VERSION)
-          gh release create "v$VERSION" vertical-stack-in-card.js --title "Release v$VERSION" --generate-notes
+      - name: Create release
+        if: steps.tag_check.outputs.exists == 'false'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          body_path: /tmp/release_notes.md
+          files: nested-lovelace-card.js

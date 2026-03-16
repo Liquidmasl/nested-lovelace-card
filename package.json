@@ -1,0 +1,18 @@
+{
+  "name": "nested-lovelace-card",
+  "version": "1.0.0",
+  "description": "Group multiple cards into a single sleek card, stacked vertically or horizontally.",
+  "license": "MIT",
+  "author": "Liquidmasl",
+  "homepage": "https://github.com/Liquidmasl/nested-lovelace-card",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Liquidmasl/nested-lovelace-card.git"
+  },
+  "keywords": [
+    "home-assistant",
+    "lovelace",
+    "custom-card",
+    "hacs"
+  ]
+}

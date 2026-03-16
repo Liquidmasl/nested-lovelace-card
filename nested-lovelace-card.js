@@ -1,5 +1,5 @@
 console.log(
-  `%cvertical-stack-in-card\n%cVersion: ${'1.0.1'}`,
+  `%cnested-lovelace-card\n%cVersion: ${'1.0.0'}`,
   'color: #1976d2; font-weight: bold;',
   ''
 );
@@ -196,8 +196,8 @@ customElements.define('vertical-stack-in-card', VerticalStackInCard);
 window.customCards = window.customCards || [];
 window.customCards.push({
   type: 'vertical-stack-in-card',
-  name: 'Vertical Stack In Card',
-  description: 'Group multiple cards into a single sleek card.',
+  name: 'Nested Lovelace Card',
+  description: 'Group multiple cards into a single sleek card, stacked vertically or horizontally.',
   preview: false,
-  documentationURL: 'https://github.com/ofekashery/vertical-stack-in-card',
+  documentationURL: 'https://github.com/Liquidmasl/nested-lovelace-card',
 });

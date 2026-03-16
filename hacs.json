@@ -1,5 +1,6 @@
 {
-    "name": "Vertical Stack In Card",
+    "name": "Nested Lovelace Card",
     "render_readme": true,
-    "filename": "vertical-stack-in-card.js"
+    "filename": "nested-lovelace-card.js",
+    "homeassistant": "2021.3.0"
 }
