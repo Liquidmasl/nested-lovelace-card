@@ -1,5 +1,5 @@
 console.log(
-  `%cnested-lovelace-card\n%cVersion: ${'1.0.2'}`,
+  `%cnested-lovelace-card\n%cVersion: ${'1.0.3'}`,
   'color: #1976d2; font-weight: bold;',
   ''
 );
@@ -192,6 +192,11 @@ class VerticalStackInCard extends HTMLElement {
       'config-changed',
       (ev) => {
         if (ev._vsicMerged) return;
+        // Only intercept the top-level config-changed fired by the
+        // hui-vertical-stack-card editor itself. Child card editors inside it
+        // also fire config-changed events that bubble up — those must pass
+        // through untouched so the hui editor can process them first.
+        if (ev.detail.config.type !== 'custom:vertical-stack-in-card') return;
         ev.stopPropagation();
         const merged = new CustomEvent('config-changed', {
           detail: { config: { ..._fullConfig, ...ev.detail.config } },
