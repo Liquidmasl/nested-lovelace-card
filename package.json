@@ -1,6 +1,6 @@
 {
   "name": "nested-lovelace-card",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Group multiple cards into a single sleek card, stacked vertically or horizontally.",
   "license": "MIT",
   "author": "Liquidmasl",
@@ -10,7 +10,7 @@
     "url": "https://github.com/Liquidmasl/nested-lovelace-card.git"
   },
   "scripts": {
-    "version": "node -e \"const fs=require('fs'),v=require('./package.json').version,f='nested-lovelace-card.js';fs.writeFileSync(f,fs.readFileSync(f,'utf8').replace(/Version: \\{'[^']*'\\}/,\\`Version: {'${v}'}\\`));\" && git add nested-lovelace-card.js"
+    "version": "node scripts/version.js && git add nested-lovelace-card.js"
   },
   "keywords": [
     "home-assistant",
