@@ -1,13 +1,31 @@
-# Vertical Stack In Card
+# Nested Lovelace Card
 
-![Version](https://img.shields.io/github/v/release/ofekashery/vertical-stack-in-card)
-![Downloads](https://img.shields.io/github/downloads/ofekashery/vertical-stack-in-card/total)
-![Stars](https://img.shields.io/github/stars/ofekashery/vertical-stack-in-card)
-![HACS](https://img.shields.io/badge/HACS-Default-41BDF5.svg)
+![Version](https://img.shields.io/github/v/release/Liquidmasl/nested-lovelace-card)
+![Downloads](https://img.shields.io/github/downloads/Liquidmasl/nested-lovelace-card/total)
+![Stars](https://img.shields.io/github/stars/Liquidmasl/nested-lovelace-card)
+![HACS](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)
 
-**Vertical Stack In Card** is a custom Lovelace card for Home Assistant, allowing you to group multiple cards into a single sleek card. It offers a clean, organized way to display multiple cards in your Home Assistant dashboard.
+**Nested Lovelace Card** is a custom Lovelace card for Home Assistant that lets you group multiple cards into a single sleek card, stacked vertically or horizontally.
 
 ![Showcase Card](https://user-images.githubusercontent.com/16443111/220773923-c28009d6-edfc-4ffd-9290-3e0c6e1acf73.png)
+
+---
+
+## About this fork
+
+This is an actively maintained fork of the original [ofekashery/vertical-stack-in-card](https://github.com/ofekashery/vertical-stack-in-card), which has not seen updates in some time. Several bugs reported there have been fixed here.
+
+The card element is still registered as `custom:vertical-stack-in-card` so **existing dashboards keep working without any changes**.
+
+### Switching from the original
+
+1. In HACS, add this repository as a custom repository:
+   `https://github.com/Liquidmasl/nested-lovelace-card`
+2. Install **Nested Lovelace Card** from there.
+3. Remove the old **Vertical Stack In Card** entry.
+4. Your existing dashboard YAML does not need to change.
+
+---
 
 ## Configuration Options
 
@@ -16,52 +34,43 @@
 | `type`       | string  | N/A     | Must be `custom:vertical-stack-in-card`.          |
 | `cards`      | list    | N/A     | List of cards to include.                         |
 | `title`      | string  | None    | Optional. Title displayed at the top of the card. |
-| `horizontal` | boolean | false   | Optional. Whatever stack cards horizontally.      |
+| `horizontal` | boolean | false   | Optional. Stack cards horizontally instead.       |
 | `styles`     | object  | None    | Optional. Add custom CSS for advanced styling.    |
 
 ## Installation
 
-### Via HACS (Home Assistant Community Store)
+### Via HACS (recommended)
 
 1. Open HACS in Home Assistant.
-2. Search for "Vertical Stack In Card."
-3. Install and follow the setup instructions.
+2. Go to **Frontend** → three-dot menu → **Custom repositories**.
+3. Add `https://github.com/Liquidmasl/nested-lovelace-card` as a **Lovelace** repository.
+4. Search for "Nested Lovelace Card" and install it.
 
 ### Manual Installation
 
-Download the [`vertical-stack-in-card.js`](https://raw.githubusercontent.com/ofekashery/vertical-stack-in-card/master/vertical-stack-in-card.js) into your `<config directory>/www` directory.
+Download [`nested-lovelace-card.js`](https://github.com/Liquidmasl/nested-lovelace-card/releases/latest/download/nested-lovelace-card.js) into your `<config>/www` directory.
 
 ```bash
-wget https://raw.githubusercontent.com/ofekashery/vertical-stack-in-card/master/vertical-stack-in-card.js
-mv vertical-stack-in-card.js /config/www/
+wget https://github.com/Liquidmasl/nested-lovelace-card/releases/latest/download/nested-lovelace-card.js
+mv nested-lovelace-card.js /config/www/
 ```
 
 #### Add resource reference
 
-If you configure Lovelace via YAML, add a reference to `vertical-stack-in-card.js` inside your `configuration.yaml`:
+If you configure Lovelace via YAML, add a reference in your `configuration.yaml`:
 
 ```yaml
 resources:
-  - url: /local/vertical-stack-in-card.js?v=1.0.1
+  - url: /local/nested-lovelace-card.js?v=1.0.1
     type: js
 ```
 
-Alternatively, if you prefer the graphical editor, use the menu to add the resource.
+Or via the UI: **Settings** → **Dashboards** → **Resources** → **Add resource**:
 
-1. Make sure, **advanced mode** is enabled in your user profile (click on your user name to get there).
-
-2. Navigate to the **Configuration** -> **Lovelace Dashboards** -> **Resources**.
-
-3. Click on **Add resource**, and fill out the form as follows:
-
-   - **Url:** `/local/vertical-stack-in-card.js?v=1.0.1`
-   - **Resource type:** `JavaScript Module`
-
-4. Finish by clicking **Create** and refresh your browser.
+- **URL:** `/local/nested-lovelace-card.js?v=1.0.1`
+- **Resource type:** `JavaScript Module`
 
 ## Usage
-
-Add the card to your Lovelace UI configuration:
 
 ```yaml
 type: 'custom:vertical-stack-in-card'
@@ -81,4 +90,4 @@ cards:
 
 ## Acknowledgements
 
-Thanks to [@ciotlosm](https://github.com/ciotlosm) and [@thomasloven](https://github.com/thomasloven) for their inspiration and contributions in building the foundation of this project.
+Thanks to [@ofekashery](https://github.com/ofekashery) for the original [vertical-stack-in-card](https://github.com/ofekashery/vertical-stack-in-card), and to [@ciotlosm](https://github.com/ciotlosm) and [@thomasloven](https://github.com/thomasloven) for their inspiration and contributions.
