@@ -29,7 +29,7 @@ This will:
 1. Bump the version in `package.json`
 2. Run `scripts/version.js` which patches the `Version: ${'x.x.x'}` string in `nested-lovelace-card.js`
 3. Create a git commit and tag
-4. The push triggers the GitHub Actions release workflow, which creates a GitHub Release with `nested-lovelace-card.js` as the artifact and pulls notes from `CHANGELOG.md`
+4. The tag push triggers the GitHub Actions release workflow, which creates a GitHub Release with `nested-lovelace-card.js` as the artifact and pulls notes from `CHANGELOG.md`
 
 **Always add a `## [x.x.x]` entry to `CHANGELOG.md` before running `npm version`**, otherwise the release notes will just say "No changelog entry found".
 
