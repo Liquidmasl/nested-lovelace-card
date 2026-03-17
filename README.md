@@ -23,7 +23,8 @@ The card element is still registered as `custom:vertical-stack-in-card` so **exi
    `https://github.com/Liquidmasl/nested-lovelace-card`
 2. Install **Nested Lovelace Card** from there.
 3. Remove the old **Vertical Stack In Card** entry.
-4. Your existing dashboard YAML does not need to change.
+4. **Empty cache and reload (ctrl-shift-r)**
+5. Your existing dashboard YAML does not need to change.
 
 ---
 
@@ -87,6 +88,12 @@ cards:
 2. Go to **Frontend** → three-dot menu → **Custom repositories**.
 3. Add `https://github.com/Liquidmasl/nested-lovelace-card` with type **Dashboard** as a custom repository.
 4. Search for "Nested Lovelace Card" and install it.
+
+If you used `Vertical Stack In Card`:
+5. Remove `Vertical Stack In Card` in HACS.
+6. Empty cache and reload (ctrl-shift-r)
+  
+> Your existing dashboard YAML does not need to change.
 
 ### Manual Installation
 
