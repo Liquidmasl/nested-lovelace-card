@@ -1,6 +1,6 @@
 {
   "name": "nested-lovelace-card",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Group multiple cards into a single sleek card, stacked vertically or horizontally.",
   "license": "MIT",
   "author": "Liquidmasl",
