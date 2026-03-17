@@ -33,12 +33,14 @@ class NestedLovelaceCardEditor extends HTMLElement {
     }
     this._huiEditor = await cls.getConfigElement();
     this._huiEditor.addEventListener('config-changed', (ev) => {
-      // Stop all events from the hui editor bubbling further — we re-dispatch
-      // the ones we care about ourselves with the full merged config.
-      ev.stopPropagation();
+      // Only intercept the final top-level event from the hui editor itself.
+      // Intermediate events (from child card editors, the card picker, etc.)
+      // must propagate so HA's internals keep working.
       if (ev.detail.config.type !== 'custom:vertical-stack-in-card') return;
+      ev.stopPropagation();
       this._fireConfigChanged({ ...this._config, ...ev.detail.config });
     });
+
     // Horizontal toggle row.
     const row = document.createElement('div');
     row.style.cssText =
@@ -55,7 +57,6 @@ class NestedLovelaceCardEditor extends HTMLElement {
     row.appendChild(label);
     row.appendChild(this._switch);
     this.appendChild(row);
-
     this.appendChild(this._huiEditor);
 
     this._sync();
@@ -63,14 +64,20 @@ class NestedLovelaceCardEditor extends HTMLElement {
 
   set hass(hass) {
     this._hass = hass;
-    if (this._huiEditor) {
-      this._huiEditor.hass = hass;
-    }
+    if (this._huiEditor) this._huiEditor.hass = hass;
+  }
+
+  // HA sets lovelace on the config element — forward it into the hui editor
+  // so hui-cards-editor and hui-card-picker receive it and work correctly.
+  set lovelace(lovelace) {
+    this._lovelace = lovelace;
+    if (this._huiEditor) this._huiEditor.lovelace = lovelace;
   }
 
   _sync() {
     if (this._huiEditor) {
       if (this._hass) this._huiEditor.hass = this._hass;
+      if (this._lovelace) this._huiEditor.lovelace = this._lovelace;
       this._huiEditor.setConfig({
         type: this._config.type,
         title: this._config.title,
@@ -136,14 +143,33 @@ class VerticalStackInCard extends HTMLElement {
     const cardContent = document.createElement('div');
     card.header = config.title;
     card.style.overflow = 'hidden';
-    this._refCards.forEach((card) => cardContent.appendChild(card));
+    // height: 100% propagates the sections-grid-allocated height down through
+    // the shadow DOM, mirroring how native horizontal-stack sets height: 100%
+    // on its #root flex container.
+    card.style.height = '100%';
+    cardContent.style.height = '100%';
+    cardContent.style.display = 'flex';
+
+    this._refCards.forEach((refCard) => cardContent.appendChild(refCard));
+
     if (config.horizontal) {
-      cardContent.style.display = 'flex';
-      cardContent.childNodes.forEach((card) => {
-        card.style.flex = '1 1 0';
-        card.style.minWidth = 0;
+      // Proportional widths from grid_options.columns (native stack gives equal
+      // flex: 1 1 0 to all; we use columns as relative flex weights).
+      this._refCards.forEach((refCard, i) => {
+        const cols = config.cards[i]?.grid_options?.columns ?? 1;
+        refCard.style.flex = `${cols} ${cols} 0`;
+        refCard.style.minWidth = '0';
+      });
+    } else {
+      cardContent.style.flexDirection = 'column';
+      // Proportional heights from grid_options.rows; cards without rows are
+      // content-sized (flex: 0 0 auto).
+      this._refCards.forEach((refCard, i) => {
+        const rows = config.cards[i]?.grid_options?.rows;
+        refCard.style.flex = rows ? `${rows} ${rows} 0` : '0 0 auto';
       });
     }
+
     card.appendChild(cardContent);
 
     const shadowRoot = this.shadowRoot || this.attachShadow({ mode: 'open' });
@@ -254,10 +280,11 @@ class VerticalStackInCard extends HTMLElement {
     return sizes.reduce((a, b) => a + b, 0);
   }
 
-  getLayoutOptions() {
+  getGridOptions() {
     return {
-      grid_columns: 4,
-      grid_rows: 'auto',
+      columns: 12,
+      rows: 'auto',
+      min_columns: 3,
     };
   }
 

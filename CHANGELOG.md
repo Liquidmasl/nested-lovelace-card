@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.0.5]
+
+### Fixed
+
+- Visual editor: adding new cards via the card picker now works correctly.
+
+### Added
+
+- Visual editor now has a toggle to switch between vertical and horizontal stacking without editing YAML.
+- Child card width and height can be controlled proportionally via `grid_options.columns` (horizontal mode) and `grid_options.rows` (vertical mode) on each child card.
+
 ## [1.0.4]
 
 ### Added

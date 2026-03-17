@@ -37,6 +37,48 @@ The card element is still registered as `custom:vertical-stack-in-card` so **exi
 | `horizontal` | boolean | false   | Optional. Stack cards horizontally instead.       |
 | `styles`     | object  | None    | Optional. Add custom CSS for advanced styling.    |
 
+### Child card sizing with `grid_options`
+
+You can control how much space each child card takes up by adding `grid_options` to it.
+
+**Vertical stack — control height:**
+
+```yaml
+type: custom:vertical-stack-in-card
+cards:
+  - type: entities
+    entities: [...]
+    grid_options:
+      rows: 2        # takes twice the space of a rows: 1 card
+  - type: gauge
+    entity: sensor.temperature
+    grid_options:
+      rows: 1
+```
+
+Cards without `rows` shrink to their natural content height. Cards with `rows` share the remaining space proportionally by their values. Height control only has a visible effect when the outer card has a fixed height allocated by the sections dashboard.
+
+**Horizontal stack — control width:**
+
+![Weather example showing irregular card widths](.github/assets/weather_example.png)
+
+```yaml
+type: custom:vertical-stack-in-card
+horizontal: true
+cards:
+  - type: weather-forecast
+    entity: weather.forecast_home
+    forecast_type: daily
+    grid_options:
+      columns: 3
+      rows: 2
+  - type: custom:mini-graph-card
+    entities:
+      - sensor.outside_temp
+```
+
+`columns` values are used as relative flex weights. Cards without `columns` default to equal width.
+
 ## Installation
 
 ### Via HACS (recommended)
