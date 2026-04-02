@@ -143,12 +143,16 @@ class VerticalStackInCard extends HTMLElement {
     const cardContent = document.createElement('div');
     card.header = config.title;
     card.style.overflow = 'hidden';
-    // height: 100% propagates the sections-grid-allocated height down through
-    // the shadow DOM, mirroring how native horizontal-stack sets height: 100%
-    // on its #root flex container.
-    card.style.height = '100%';
-    cardContent.style.height = '100%';
     cardContent.style.display = 'flex';
+    // height: 100% is only appropriate for horizontal stacks, where the card
+    // should fill the grid-allocated row height. For vertical stacks, height
+    // must be content-driven (auto) — otherwise child cards that also set
+    // height: 100% (e.g. hui-horizontal-stack-card after HA 2025.x) will
+    // resolve their 100% against our container height and inflate to fill it.
+    if (config.horizontal) {
+      card.style.height = '100%';
+      cardContent.style.height = '100%';
+    }
 
     this._refCards.forEach((refCard) => cardContent.appendChild(refCard));
 

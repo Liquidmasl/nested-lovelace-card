@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.0.6]
+
+### Fixed
+
+- Vertical stacks no longer expand to fill all available space when a nested `horizontal-stack` card is present. This was caused by HA 2025.x setting `height: 100%` on horizontal-stack host elements — combined with our container also using `height: 100%`, child cards would resolve their height against the full grid-allocated height. Fixed by making vertical stacks content-driven (no explicit height), while horizontal stacks retain `height: 100%` to correctly fill their allocated grid row.
+
 ## [1.0.5]
 
 ### Fixed
