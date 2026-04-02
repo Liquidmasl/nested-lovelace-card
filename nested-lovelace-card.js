@@ -1,5 +1,5 @@
 console.log(
-  `%cnested-lovelace-card\n%cVersion: ${'1.0.5'}`,
+  `%cnested-lovelace-card\n%cVersion: ${'1.0.6'}`,
   'color: #1976d2; font-weight: bold;',
   ''
 );
